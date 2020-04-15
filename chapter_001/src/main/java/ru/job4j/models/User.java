@@ -15,6 +15,9 @@ public class User {
     private String name;
     private Calendar expired;
 
+    /**
+     * Constructor.
+     */
     public User() {
     }
 

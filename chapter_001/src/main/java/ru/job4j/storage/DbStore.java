@@ -168,6 +168,9 @@ public class DbStore implements AddAble<User>, FindAble<User>, UpdateAble<User>,
         return list;
     }
 
+    /**
+     * Close DbStore of resources.
+     */
     @Override
     public void close() {
         this.factory.close();

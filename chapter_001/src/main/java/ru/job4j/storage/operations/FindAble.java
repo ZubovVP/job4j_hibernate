@@ -8,5 +8,11 @@ package ru.job4j.storage.operations;
  * Date: 09.04.2020.
  */
 public interface FindAble<T> {
+    /**
+     * Find element use id.
+     *
+     * @param id - id of an element.
+     * @return - element.
+     */
     T find(int id);
 }

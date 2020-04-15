@@ -10,5 +10,10 @@ import java.util.List;
  * Date: 09.04.2020.
  */
 public interface FindAllAble<T> {
+    /**
+     * Find all elements and return those elements.
+     *
+     * @return - list of elements.
+     */
     List<T> findAll();
 }
