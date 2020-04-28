@@ -1,0 +1,30 @@
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+         http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+<servlet>
+  <servlet-name>ItemCreateServlet</servlet-name>
+  <servlet-class>ru.job4j.todoList.servlets.ItemCreateServlet </servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ItemCreateServlet</servlet-name>
+  <url-pattern>/create</url-pattern>
+</servlet-mapping>
+<servlet>
+  <servlet-name>ItemGetServlet</servlet-name>
+  <servlet-class>ru.job4j.todoList.servlets.ItemGetServlet </servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ItemGetServlet</servlet-name>
+  <url-pattern>/get</url-pattern>
+</servlet-mapping>
+  <servlet>
+    <servlet-name>ItemUpdateServlet</servlet-name>
+    <servlet-class>ru.job4j.todoList.servlets.ItemUpdateServlet </servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ItemUpdateServlet</servlet-name>
+    <url-pattern>/update</url-pattern>
+  </servlet-mapping>
+</web-app>
