@@ -6,12 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="chapter_001" />
+        <module name="job4j_hibernate" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="chapter_001" target="1.8" />
-      <module name="junior" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
