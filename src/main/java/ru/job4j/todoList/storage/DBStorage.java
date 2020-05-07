@@ -6,11 +6,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 import ru.job4j.todoList.models.Item;
 import ru.job4j.todoList.storage.operations.Actions;
 import ru.job4j.todoList.storage.operations.SpecialActions;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by Intellij IDEA.
@@ -19,13 +21,13 @@ import java.util.List;
  * Version: $Id$.
  * Date: 22.04.2020.
  */
-public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
+public class DBStorage<I> implements Actions<Item>, SpecialActions<Item> {
     private static final Logger LOGGER = LogManager.getLogger(DBStorage.class.getName());
-    private static DBStorage ourInstance = new DBStorage();
+    private static DBStorage<Item> ourInstance = new DBStorage<>();
     private final SessionFactory factory = new Configuration().configure().buildSessionFactory();
 
 
-    public static DBStorage getInstance() {
+    public static DBStorage<Item> getInstance() {
         return ourInstance;
     }
 
@@ -39,25 +41,15 @@ public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
      * @return - result.
      */
     @Override
-    public boolean add(E element) {
-        Session session = null;
-        Transaction tx = null;
+    public boolean add(Item element) {
         boolean result = false;
         try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            session.save(element);
+            this.tx(
+                    session -> session.save(element)
+            );
             result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
             LOGGER.error("Failed to add element to the Database. Element = {}.", element);
-        } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
         }
         return result;
     }
@@ -68,25 +60,10 @@ public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
      * @return - list of elements.
      */
     @Override
-    public List<E> getAllElements() {
-        Session session = null;
-        Transaction tx = null;
-        List list = null;
-        try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            list = session.createQuery("from Item i").list();
-        } catch (Exception e) {
-            LOGGER.error("Failed to findAll elements in the Database.");
-        } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
-        }
-        return list;
+    public List<Item> getAllElements() {
+        return this.tx(
+                session -> session.createQuery("from Item").list()
+        );
     }
 
     /**
@@ -97,24 +74,18 @@ public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
      */
     @Override
     public boolean delete(int id) {
-        Session session = null;
-        Transaction tx = null;
         boolean result = false;
         try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            session.createQuery("delete Item where id =" + id).executeUpdate();
+            this.tx(
+                    session -> {
+                        final Query query = session.createQuery("delete Item where id = :id");
+                        query.setParameter("id", id);
+                        return query.executeUpdate();
+                    }
+            );
             result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-            LOGGER.error("Failed to delete element from the Database. Id = {}.", id);
-        } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
+            LOGGER.error("Failed to delete element to the Database. Id = {}.", id);
         }
         return result;
     }
@@ -125,53 +96,33 @@ public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
      * @return - result.
      */
     @Override
-    public List<E> getAllIsNotDoneElements() {
-        Session session = null;
-        Transaction tx = null;
-        List<E> list = null;
-        try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            list = session.createQuery("from Item i where i.done = FALSE").list();
-        } catch (Exception e) {
-            LOGGER.error("Failed to find elements where done = false.");
-        } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
-        }
-        return list;
+    public List<Item> getAllIsNotDoneElements() {
+        return this.tx(
+                session -> session.createQuery("from Item i where i.done = FALSE").list());
     }
 
     /**
      * Update an element from DB.
      *
-     * @param element - element.
+     * @param item - element.
      * @return - result.
      */
     @Override
-    public boolean update(E element) {
-        Session session = null;
-        Transaction tx = null;
+    public boolean update(Item item) {
         boolean result = false;
         try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            session.update(element);
+            this.tx(
+                    session -> {
+                        final Query query = session.createQuery("update Item set description = :desc, done = :done where id = :id");
+                        query.setParameter("desc", item.getDescription());
+                        query.setParameter("done", item.isDone());
+                        query.setParameter("id", item.getId());
+                        return query.executeUpdate();
+                    }
+            );
             result = true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-            LOGGER.error("Failed to update an element into Database. Element = {}.", element);
-        } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
+            LOGGER.error("Failed to update element to the Database. Element = {}.", item);
         }
         return result;
     }
@@ -183,25 +134,34 @@ public class DBStorage<E> implements Actions<E>, SpecialActions<E> {
      * @return - element.
      */
     @Override
-    public E find(int id) {
-        Session session = null;
-        Transaction tx = null;
-        List<Item> list = null;
+    public Item find(int id) {
+
+        List<Item> list = this.tx(
+                session -> session.createQuery("from Item i where i.id = " + id).list()
+        );
+        return list != null ? list.get(0) : null;
+    }
+
+    /**
+     * Execute operation.
+     *
+     * @param command - command.
+     * @param <E> - element.
+     * @return - result.
+     */
+    private <E> E tx(final Function<Session, E> command) {
+        final Session session = factory.openSession();
+        final Transaction tx = session.beginTransaction();
         try {
-            session = factory.openSession();
-            tx = session.beginTransaction();
-            list = session.createQuery("from Item i where i.id = " + id).list();
-        } catch (Exception e) {
-            LOGGER.error("Failed to find element. Id = {}.", id);
+            E rsl = command.apply(session);
+            tx.commit();
+            return rsl;
+        } catch (final Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         } finally {
-            if (tx != null) {
-                tx.commit();
-            }
-            if (tx != null) {
-                session.close();
-            }
+            session.close();
         }
-        return list != null ? (E) list.get(0) : null;
     }
 
     /**
