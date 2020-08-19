@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Todo list</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script>
+        function updateItems() {
+            deleteItems();
+            var allItems = document.querySelector('#payt');
+            $.ajax('http://localhost:8080/get', {
+                    method: 'GET',
+                    data: {allItems: allItems.checked},
+                    dataType: 'application/json',
+                    complete: function (data) {
+                        var items = JSON.parse(data.responseText);
+                        for (var i = 0; i < items.length; i++) {
+                            var idI = items[i].id;
+                            var descriptionI = items[i].description;
+                            var createdI = new Date(items[i].created);
+                            var doneI = items[i].done;
+                            if (doneI === false) {
+                                doneI = "<button form=changeStatus type=submit class=refuse onclick=changeDone(" + idI + ");>&#10006</i></button>";
+                            } else {
+                                doneI = "<button form=changeStatus type=submit class=agree onclick=changeDone(" + idI + ");>&#10004</i></button>";
+                            }
+                            $('#table tr:last').after('<tr><td hidden>' + idI + '</td><td>' + descriptionI + '</td><td>' + createdI + '</td><td>' + doneI + '</td></tr>');
+                        }
+                        console.log(items);
+                    }
+                }
+            );
+        }
+
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        } else {
+                            updateItems();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        function sendNewItem() {
+            var desc = $('#desc').val();
+            var allItems = document.querySelector('#payt');
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8080/create',
+                data: {desc: desc, allItems: allItems.checked},
+                dataType: 'application/json',
+                success: function (data) {
+                    console.log(JSON.parse(data.responseText));
+                }
+            });
+            setTimeout(function () {
+                updateItems();
+            }, 500);
+        }
+
+        function deleteItems() {
+            $("#table tr:gt(0)").remove();
+        }
+
+        function changeDone(id) {
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8080/update',
+                data: {id: id},
+                dataType: 'application/json',
+                success: function (data) {
+                    console.log(JSON.parse(data.responseText));
+                }
+            });
+            setTimeout(function () {
+                updateItems();
+            }, 500);
+        }
+
+    </script>
+    <style>
+        body {
+            background: url("view.jpg") no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-family: "Times New Roman", serif;
+            text-align: center;
+            font-size: 50px;
+        }
+
+        h2 {
+            color: #000000;
+            font-family: "Times New Roman", serif;
+            text-align: center;
+            font-size: 40px;
+        }
+
+        p {
+            color: #000000;
+            font-family: "Times New Roman", serif;
+            text-align: left;
+            font-size: 25px;
+        }
+
+        .button {
+            text-align: center;
+            background: #fdeaa8;
+            width: 130px;
+            height: 35px;
+        }
+
+        .container-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .refuse {
+            color: red;
+            font-size: 200%;
+            font-family: serif;
+            position: center;
+        }
+
+        .agree {
+            color: green;
+            font-size: 200%;
+            font-family: serif;
+            position: center;
+        }
+
+        #payt {
+            display: none;
+        }
+
+        [for="payt"] {
+            display: inline-block;
+            padding: 7px;
+            border-radius: 100px;
+            background: rgba(0, 0, 0, .1);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .4) inset, 0 1px 1px 0 rgba(255, 255, 255, .1);
+            text-shadow: 0 1px rgba(0, 0, 0, .5);
+            cursor: pointer;
+        }
+
+        [for="payt"]:before, [for="payt"]:after {
+            display: inline-block;
+            padding: 5px 20px;
+        }
+
+        [for="payt"]:before {
+            content: "ВЫКЛ";
+            border-radius: 100px 0 0 100px;
+            background: rgba(0, 0, 0, .3) linear-gradient(rgba(0, 0, 0, .3), rgba(0, 0, 0, 0));
+            color: rgba(0, 0, 0, .4);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .5) inset, 0 1px 0 rgba(255, 255, 255, .4);
+        }
+
+        [for="payt"]:after {
+            content: "ВКЛ";
+            border-radius: 0 100px 100px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .3));
+            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, .2), 0 1px 2px 0 rgba(0, 0, 0, .5);
+        }
+
+        #payt:checked ~ [for="payt"]:after {
+            background: rgba(0, 0, 0, .3) linear-gradient(rgba(0, 0, 0, .3), rgba(0, 0, 0, 0));
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .5) inset, 0 1px 0 rgba(255, 255, 255, .4);
+            color: rgba(0, 0, 0, .4);
+        }
+
+        #payt:checked ~ [for="payt"]:before {
+            box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, .2), 0 1px 2px 0 rgba(0, 0, 0, .5);
+            background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .3));
+            color: inherit;
+        }
+    </style>
+</head>
+<body onload="updateItems()">
+<div class="container">
+    <h2>Items</h2>
+    <form action="index.html" class="needs-validation" novalidate id='mainForm'>
+        <div class="form-group">
+            <label for="desc">Description:</label>
+            <input type="text" class="form-control" id="desc" placeholder="Enter description" name="desc" required>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Please fill this field.</div>
+        </div>
+    </form>
+    <div class="container-buttons">
+        <button form="mainForm" type="submit" class="button" onclick=sendNewItem();>Add new item</button>
+        <input type="checkbox" id="payt" onclick="updateItems()"/><label for="payt"></label>
+    </div>
+</div>
+<div class="container">
+    <h2>Items</h2>
+    <table class="table" id="table" align="center">
+        <thead>
+        <tr>
+            <th hidden>Id</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Done</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
