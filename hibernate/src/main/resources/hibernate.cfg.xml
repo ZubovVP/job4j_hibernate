@@ -26,5 +26,10 @@
         <mapping class="ru.job4j.test.oneToMany.CarsForOneToMany"/>
         <mapping class="ru.job4j.test.oneToMany.ModelsForOneToMany"/>
 
+        <mapping class="ru.job4j.test.manyToMany.Address"/>
+        <mapping class="ru.job4j.test.manyToMany.Person"/>
+
+        <mapping class="ru.job4j.hql.Candidate"/>
+
     </session-factory>
 </hibernate-configuration>
