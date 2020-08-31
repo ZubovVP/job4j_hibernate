@@ -34,8 +34,7 @@ public class ModelsForOneToMany {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(cascade=CascadeType.ALL)
-    @JoinColumn(name="id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CarsForOneToMany> cars = new ArrayList<>();
 
     public void addCar(CarsForOneToMany car) {
