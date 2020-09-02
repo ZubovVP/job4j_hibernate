@@ -33,12 +33,24 @@ public class Candidate {
     private int expirience;
     @Column(name = "salary")
     private double salary;
+    @ManyToOne
+    @JoinColumn(name = "vacancy_id")
+    private Vacancy vacancy;
 
     public static Candidate of(String name, int expirience, double salary) {
         Candidate candidate = new Candidate();
         candidate.name = name;
         candidate.expirience = expirience;
         candidate.salary = salary;
+        return candidate;
+    }
+
+    public static Candidate of(String name, int expirience, double salary, Vacancy vacancy) {
+        Candidate candidate = new Candidate();
+        candidate.name = name;
+        candidate.expirience = expirience;
+        candidate.salary = salary;
+        candidate.vacancy = vacancy;
         return candidate;
     }
 }

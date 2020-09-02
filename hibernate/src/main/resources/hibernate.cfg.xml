@@ -30,6 +30,8 @@
         <mapping class="ru.job4j.test.manyToMany.Person"/>
 
         <mapping class="ru.job4j.hql.Candidate"/>
+        <mapping class="ru.job4j.hql.Vacancy"/>
+        <mapping class="ru.job4j.hql.BaseOfVacancy"/>
 
     </session-factory>
 </hibernate-configuration>
