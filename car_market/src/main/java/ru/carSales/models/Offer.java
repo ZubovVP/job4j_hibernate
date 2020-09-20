@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * Created by Intellij IDEA.
@@ -50,7 +51,10 @@ public class Offer {
     @Column(name = "status")
     private Boolean status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Column(name = "date")
+    private LocalDate date;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserForSales user;
 }

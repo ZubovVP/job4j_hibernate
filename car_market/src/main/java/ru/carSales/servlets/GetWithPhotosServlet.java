@@ -1,15 +1,14 @@
 package ru.carSales.servlets;
 
-import lombok.SneakyThrows;
 import org.codehaus.jackson.map.ObjectMapper;
 import ru.carSales.models.Offer;
 import ru.carSales.storage.ValidateCarService;
-import ru.carSales.storage.operations.Actions;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 
@@ -18,13 +17,13 @@ import java.util.List;
  * User: Vitaly Zubov.
  * Email: Zubov.VP@yandex.ru.
  * Version: $Id$.
- * Date: 24.06.2020.
+ * Date: 16.09.2020.
  */
-public class GetAllCarsServlet extends HttpServlet {
+public class GetWithPhotosServlet extends HttpServlet {
     private final static ValidateCarService VS = ValidateCarService.getInstance();
 
     /**
-     * Get all offer from DB.
+     * Get all offers from DB with photos.
      *
      * @param req - req.
      * @param resp - resp.
@@ -33,7 +32,7 @@ public class GetAllCarsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.addHeader("Access-Control-Allow-Origin", "*"); // Cros
-        List<Offer> cars = VS.getAllElements();
+        List<Offer> cars = VS.findWithPicture();
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(cars);
         resp.setContentType("application/json");
@@ -46,7 +45,6 @@ public class GetAllCarsServlet extends HttpServlet {
     /**
      * Close ValidateCarService and destroy GetAllCarsServlet.
      */
-    @SneakyThrows
     @Override
     public void destroy() {
         VS.close();

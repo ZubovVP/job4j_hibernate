@@ -2,7 +2,9 @@ package ru.carSales.storage;
 
 import ru.carSales.storage.operations.Actions;
 import ru.carSales.models.Offer;
+import ru.carSales.storage.operations.OptionalActitions;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -12,7 +14,7 @@ import java.util.List;
  * Version: $Id$.
  * Date: 22.04.2020.
  */
-public class ValidateCarService implements Actions<Offer> {
+public class ValidateCarService implements Actions<Offer>, OptionalActitions<Offer> {
     private final static DBStorage_car<Offer> STORAGE = DBStorage_car.getInstance();
     private static ValidateCarService ourInstance = new ValidateCarService();
 
@@ -50,11 +52,6 @@ public class ValidateCarService implements Actions<Offer> {
     @Override
     public List<Offer> getAllElements() {
         List<Offer> result = STORAGE.getAllElements();
-        for (Offer offer : result) {
-            if (!offer.getStatus()) {
-                result.remove(offer);
-            }
-        }
         return result;
     }
 
@@ -94,7 +91,7 @@ public class ValidateCarService implements Actions<Offer> {
      * Find element by id.
      *
      * @param id - id of an Offer.
-     * @return- Offer
+     * @return - Offer
      */
     @Override
     public Offer find(int id) {
@@ -103,6 +100,55 @@ public class ValidateCarService implements Actions<Offer> {
             throw new IncorrectDateException("Wrong id for find offer");
         } else {
             result = STORAGE.find(id);
+        }
+        return result;
+    }
+
+    /**
+     * Find elements after or equals date.
+     *
+     * @param date - date .
+     * @return - list of offers.
+     */
+    @Override
+    public List<Offer> findByDate(LocalDate date) {
+        List<Offer> result;
+        if(date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())){
+            result = STORAGE.findByDate(date);
+            for (Offer offer : result) {
+                offer.getUser().setCars(null);
+            }
+        } else {
+            throw new IncorrectDateException("Wrong is date");
+        }
+        return result;
+    }
+
+    /**
+     * Find elements with this type.
+     *
+     * @param type - type of an element.
+     * @return - list of offers.
+     */
+    @Override
+    public List<Offer> findByType(String type) {
+        List<Offer> result = STORAGE.findByType(type);
+        for (Offer offer : result) {
+            offer.getUser().setCars(null);
+        }
+        return result;
+    }
+
+    /**
+     * Find offers with picture.
+     *
+     * @return - list of offers.
+     */
+    @Override
+    public List<Offer> findWithPicture() {
+        List<Offer> result = STORAGE.findWithPicture();
+        for (Offer offer : result) {
+            offer.getUser().setCars(null);
         }
         return result;
     }

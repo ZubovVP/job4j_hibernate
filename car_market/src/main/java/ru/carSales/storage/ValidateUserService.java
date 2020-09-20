@@ -125,9 +125,10 @@ public class ValidateUserService implements Actions<UserForSales>, FindUserAble<
         UserForSales result;
         if (email != null && password != null && !email.equals("") && !password.equals("")) {
             result = STORAGE.findUser(encrypt.encrypt(email), encrypt.encrypt(password));
-            return result;
-        } else {
+        }
+        else {
             throw new IncorrectDateException("Wrong e-mail or password for find user.");
         }
+        return result;
     }
 }

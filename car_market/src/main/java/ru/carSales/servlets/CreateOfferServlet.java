@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -57,6 +58,7 @@ public class CreateOfferServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Offer offer = new Offer();
+        offer.setDate(LocalDate.now());
         boolean isMultipart = ServletFileUpload.isMultipartContent(req);
         if (!isMultipart) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -100,14 +102,14 @@ public class CreateOfferServlet extends HttpServlet {
      * @throws Exception - Exception.
      */
     private void processUploadedFile(Offer car, FileItem item) throws Exception {
-        File uploadetFile = new File("C:\\projects\\job4j_hibernate\\src\\main\\webapp\\images");
+        File uploadetFile = new File("C:\\projects\\job4j_hibernate\\car_market\\src\\main\\webapp\\images");
         String name;
         if (!uploadetFile.exists() && uploadetFile.isFile()) {
             uploadetFile.mkdir();
         }
         do {
             name = random.nextInt() + item.getName();
-            uploadetFile = new File(String.format("C:\\projects\\job4j_hibernate\\src\\main\\webapp\\images\\%s", name));
+            uploadetFile = new File(String.format("C:\\projects\\job4j_hibernate\\car_market\\src\\main\\webapp\\images\\%s", name));
         } while (uploadetFile.exists());
         uploadetFile.createNewFile();
         item.write(uploadetFile);

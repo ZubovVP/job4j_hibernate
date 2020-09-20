@@ -8,6 +8,8 @@ import ru.carSales.models.Offer;
 import ru.carSales.models.UserForSales;
 import ru.carSales.storage.operations.Actions;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -25,7 +27,7 @@ public class ValidateCarServiceTest {
     private Actions<UserForSales> db_user = DBStorage_user.getInstance();
     private Offer offer = new Offer();
     private UserForSales user = new UserForSales();
-    private Actions<Offer> validate = ValidateCarService.getInstance();
+    private ValidateCarService validate = ValidateCarService.getInstance();
 
 
     @Before
@@ -77,7 +79,7 @@ public class ValidateCarServiceTest {
     @Test
     public void getAllElementsFromDb() {
         Assert.assertThat(this.validate.getAllElements().size(), is(0));
-        this.db_offer.add(this.offer);
+        this.validate.add(this.offer);
         Assert.assertThat(this.validate.getAllElements().size(), is(1));
     }
 
@@ -177,6 +179,45 @@ public class ValidateCarServiceTest {
         this.validate.find(-1);
     }
 
+    @Test
+    public void findElementByDateNow() {
+        this.offer = this.validate.add(this.offer);
+        Assert.assertThat(this.validate.findByDate(LocalDate.now()).size(), is(1));
+        Assert.assertThat(this.validate.findByDate(LocalDate.now()).get(0), is(this.offer));
+    }
+
+    @Test(expected = IncorrectDateException.class)
+    public void findElementByDateFutureShouldException() {
+        this.offer = this.validate.add(this.offer);
+        Assert.assertThat(this.validate.findByDate(LocalDate.now()).size(), is(1));
+        this.validate.findByDate(LocalDate.now().plus(Period.ofDays(2)));
+    }
+
+
+    @Test
+    public void findElementByType() {
+        this.offer = this.validate.add(this.offer);
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(1));
+        Assert.assertThat(this.validate.findByType("aaaaaa").size(), is(0));
+        Assert.assertThat(this.validate.findByType(this.offer.getTypeBody()).size(), is(1));
+        Assert.assertThat(this.validate.findByType(this.offer.getTypeBody()).get(0), is(this.offer));
+    }
+
+    @Test
+    public void findElementByPictureWithoutPictureShouldNull() {
+        this.offer = this.validate.add(this.offer);
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(1));
+        Assert.assertThat(this.validate.findWithPicture().size(), is(0));
+    }
+
+    @Test
+    public void findElementByPictureWithPicture() {
+        this.offer.setDir_photos("test");
+        this.offer = this.validate.add(this.offer);
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(1));
+        Assert.assertThat(this.validate.findWithPicture().size(), is(1));
+    }
+
     private UserForSales fillUser(UserForSales user) {
         user.setName("TestName");
         user.setSurname("TestSurname");
@@ -195,6 +236,7 @@ public class ValidateCarServiceTest {
         offer.setTransmission("testTransmission");
         offer.setTypeBody("testType");
         offer.setYearOfIssue(1900);
+        offer.setDate(LocalDate.now());
         return offer;
     }
 }

@@ -8,10 +8,13 @@ import ru.carSales.models.Offer;
 import ru.carSales.models.UserForSales;
 
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Intellij IDEA.
@@ -31,6 +34,7 @@ public class DBStorage_carTest {
     public void start() {
         this.user = fillUser(user);
         this.offer = fillOffer(this.user, this.offer);
+        this.offer.setDate(LocalDate.now());
     }
 
     @After
@@ -110,4 +114,44 @@ public class DBStorage_carTest {
         offer.setYearOfIssue(1900);
         return offer;
     }
+
+    @Test
+    public void findByDate() {
+        this.offer = this.db_offer.add(this.offer);
+        Offer offer2 = new Offer();
+        fillOffer(this.user, offer2);
+        LocalDate date = LocalDate.now();
+        date = date.minus(Period.ofDays(10));
+        offer2.setDate(date);
+        this.db_offer.add(offer2);
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(2));
+        LocalDate date1 = LocalDate.now();
+        List<Offer> result = this.db_offer.findByDate(date1.minus(Period.ofDays(2)));
+        Assert.assertThat(result.size(), is(1));
+        assertTrue(result.get(0).getDate().isEqual(this.offer.getDate()));
+
+    }
+
+    @Test
+    public void findByType() {
+        this.offer = this.db_offer.add(this.offer);
+        Offer offer2 = new Offer();
+        offer2.setDate(LocalDate.now());
+        fillOffer(this.user, offer2);
+        offer2.setTypeBody("testType2");
+        this.db_offer.add(offer2);
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(2));
+        List<Offer> result = this.db_offer.findByType("testType2");
+        Assert.assertThat(result.size(), is(1));
+        Assert.assertThat(result.get(0).getTypeBody(), is(offer2.getTypeBody()));
+        Assert.assertThat(result.get(0).getUser().getId(), is(offer2.getUser().getId()));
+    }
+
+    @Test
+    public void findByPicture() {
+        this.offer = this.db_offer.add(this.offer);
+        Assert.assertThat(this.db_offer.findWithPicture().size(), is(0));
+        Assert.assertThat(this.db_offer.getAllElements().size(), is(1));
+    }
+
 }

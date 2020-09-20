@@ -75,4 +75,28 @@
     <filter-name>FilterLogin</filter-name>
     <servlet-name>CreateOfferServlet</servlet-name>
   </filter-mapping>
+  <servlet>
+    <servlet-name>GetByTypeServlet</servlet-name>
+    <servlet-class>ru.carSales.servlets.GetByTypeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetByTypeServlet</servlet-name>
+    <url-pattern>/getByType</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>GetByDateServlet</servlet-name>
+    <servlet-class>ru.carSales.servlets.GetByDateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetByDateServlet</servlet-name>
+    <url-pattern>/getByDate</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>GetWithPhotosServlet</servlet-name>
+    <servlet-class>ru.carSales.servlets.GetWithPhotosServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetWithPhotosServlet</servlet-name>
+    <url-pattern>/getWithPhotos</url-pattern>
+  </servlet-mapping>
 </web-app>

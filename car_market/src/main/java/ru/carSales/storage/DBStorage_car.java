@@ -6,10 +6,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import ru.carSales.models.Offer;
-import ru.carSales.models.UserForSales;
-import ru.carSales.storage.operations.Actions;
+import ru.carSales.storage.operations.*;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ import java.util.List;
  * Version: $Id$.
  * Date: 10.08.2020.
  */
-public class DBStorage_car<I> implements Actions<Offer> {
+public class DBStorage_car<I> implements Actions<Offer>, OptionalActitions<Offer> {
     private static final Logger LOGGER = LogManager.getLogger(DBStorage_car.class.getName());
     private static DBStorage_car<Offer> ourInstance = new DBStorage_car<>();
     private final SessionFactory factory = new Configuration().configure().buildSessionFactory();
@@ -46,7 +45,7 @@ public class DBStorage_car<I> implements Actions<Offer> {
         } catch (Exception e) {
             LOGGER.error("Failed to add element to the Database. Element = {}.", element);
         }
-        return getOffer(element);
+        return element;
     }
 
     /**
@@ -56,31 +55,9 @@ public class DBStorage_car<I> implements Actions<Offer> {
      */
     @Override
     public List<Offer> getAllElements() {
-        List list = this.tx(
-                session -> session.createQuery("SELECT car.id, car.mark, car.yearOfIssue, car.category, car.transmission, car.typeBody,car.dir_photos, car.price, user.id, user.name, user.telephone, car.status from Offer car left join car.user user").list(),
-                this.factory
+        return this.tx(
+                session -> session.createQuery("SELECT distinct ff from Offer ff join fetch  ff.user us").list(), this.factory
         );
-        List<Offer> result = new ArrayList<>();
-        for (Object o : list) {
-            Offer car = new Offer();
-            Object[] rows = (Object[]) o;
-            car.setId((Integer) rows[0]);
-            car.setMark((String) rows[1]);
-            car.setYearOfIssue((Integer) rows[2]);
-            car.setCategory((String) rows[3]);
-            car.setTransmission((String) rows[4]);
-            car.setTypeBody((String) rows[5]);
-            car.setDir_photos(String.format("%s%s", "images/", rows[6]));
-            car.setPrice((Integer) rows[7]);
-            UserForSales user = new UserForSales();
-            user.setId((Integer) rows[8]);
-            user.setName((String) rows[9]);
-            user.setTelephone((String) rows[10]);
-            car.setUser(user);
-            car.setStatus((Boolean) rows[11]);
-            result.add(car);
-        }
-        return result;
     }
 
     /**
@@ -154,27 +131,54 @@ public class DBStorage_car<I> implements Actions<Offer> {
     }
 
     /**
-     * Return an offer.
+     * Find element use date.
      *
-     * @param element - element.
-     * @return - offer
+     * @param date - date .
+     * @return - list of offers.
      */
-    private Offer getOffer(Offer element) {
-        List<Offer> list = this.tx(
+    @Override
+    public List<Offer> findByDate(LocalDate date) {
+        return this.tx(
                 session -> {
-                    final Query query = session.createQuery("FROM Offer WHERE mark = :mark AND category = :category AND typeBody = :typeBody AND transmission = :transmission AND yearOfIssue = :yearOfIssue");
-                    query.setParameter("mark", element.getMark());
-                    query.setParameter("category", element.getCategory());
-                    query.setParameter("typeBody", element.getTypeBody());
-                    query.setParameter("transmission", element.getTransmission());
-                    query.setParameter("yearOfIssue", element.getYearOfIssue());
+                    final Query query = session.createQuery("SELECT DISTINCT ff FROM Offer ff " +
+                            "JOIN FETCH ff.user u " +
+                            "WHERE ff.date >= :date", Offer.class);
+                    query.setParameter("date", date);
                     return query.list();
                 }
                 , this.factory);
-
-        return list.size() != 0 ? list.get(0) : null;
     }
 
+    /**
+     * Find element with the this type.
+     *
+     * @param type - type of an element.
+     * @return - list of offers.
+     */
+    @Override
+    public List<Offer> findByType(String type) {
+        return this.tx(
+                session -> {
+                    final Query query = session.createQuery("SELECT DISTINCT ff FROM Offer ff " +
+                            "JOIN FETCH ff.user u " +
+                            "WHERE ff.typeBody = :type", Offer.class);
+                    query.setParameter("type", type);
+                    return query.list();
+                }
+                , this.factory);
+    }
+
+    /**
+     * Find elements with picture.
+     *
+     * @return - list of offers.
+     */
+    @Override
+    public List<Offer> findWithPicture() {
+        return this.tx(
+                session -> session.createQuery("SELECT distinct ff from Offer ff join fetch  ff.user us where ff.dir_photos != NULL").list(), this.factory
+        );
+    }
 
     /**
      * Close SessionFactory.

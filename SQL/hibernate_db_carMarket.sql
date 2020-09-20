@@ -17,5 +17,6 @@ year_of_issue INT NOT NULL,
 photos VARCHAR(500),
 status BOOLEAN DEFAULT false,
 price INT NOT NULL,
+date TIMESTAMP NOT NULL,
 user_id INT NOT NULL REFERENCES users1(id)
 );
