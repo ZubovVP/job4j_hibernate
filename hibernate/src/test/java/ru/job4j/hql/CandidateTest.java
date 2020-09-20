@@ -11,6 +11,7 @@ import org.junit.Test;
 
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 
 import static org.hamcrest.core.Is.is;
@@ -74,15 +75,13 @@ public class CandidateTest {
 
     @Test
     public void TestGetAllCandidatesFromDb() {
-        Iterator itr = this.tx(
-                session -> {
-                    final Query query = session.createQuery("from Candidate");
-                    return query.list().iterator();
-                }
+        List<Candidate> list = this.tx(
+                session -> session.createQuery("from Candidate").list()
                 , this.factory);
-        assertThat(itr.next(), is(this.first));
-        assertThat(itr.next(), is(this.second));
-        assertThat(itr.next(), is(this.third));
+        assertThat(list.size(), is(3));
+        assertTrue(list.contains(this.first));
+        assertTrue(list.contains(this.second));
+        assertTrue(list.contains(this.third));
     }
 
     @Test

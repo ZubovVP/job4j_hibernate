@@ -25,24 +25,26 @@ public class LoginServlet extends HttpServlet {
     /**
      * Check password and e-mail, if false than redirect CreateUser.jsp, if exist than redirect CreateUser.jsp.
      *
-     * @param req - req.
+     * @param req  - req.
      * @param resp - resp.
      * @throws ServletException - ServletException.
-     * @throws IOException - IOException.
+     * @throws IOException      - IOException.
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        if (password == null || email == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
+            return;
+        }
         UserForSales result = this.VALIDATE.findUser(email, password);
         if (result != null) {
             HttpSession session = req.getSession();
             session.setAttribute("id", result.getId());
             resp.sendRedirect(String.format("%s/createOffer", req.getContextPath()));
         } else {
-            if (email != null && password != null) {
-                req.setAttribute("error", "Credentional invalid");
-            }
+            req.setAttribute("error", "Credentional invalid");
             getServletContext().getRequestDispatcher("/WEB-INF/views/CreateUser.jsp").forward(req, resp);
         }
     }
@@ -50,10 +52,10 @@ public class LoginServlet extends HttpServlet {
     /**
      * Create new user.
      *
-     * @param req - req.
+     * @param req  - req.
      * @param resp - resp.
      * @throws ServletException - ServletException.
-     * @throws IOException - IOException.
+     * @throws IOException      - IOException.
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
