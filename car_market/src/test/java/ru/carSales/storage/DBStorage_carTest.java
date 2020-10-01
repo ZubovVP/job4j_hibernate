@@ -118,18 +118,20 @@ public class DBStorage_carTest {
     @Test
     public void findByDate() {
         this.offer = this.db_offer.add(this.offer);
+        List<Offer> result = this.db_offer.findByDate(LocalDate.now().minus(Period.ofDays(5)), LocalDate.now());
+        Assert.assertThat(result.size(), is(1));
+        assertTrue(result.get(0).getDate().isEqual(this.offer.getDate()));
         Offer offer2 = new Offer();
         fillOffer(this.user, offer2);
         LocalDate date = LocalDate.now();
         date = date.minus(Period.ofDays(10));
         offer2.setDate(date);
         this.db_offer.add(offer2);
-        Assert.assertThat(this.db_offer.getAllElements().size(), is(2));
-        LocalDate date1 = LocalDate.now();
-        List<Offer> result = this.db_offer.findByDate(date1.minus(Period.ofDays(2)));
+        result = this.db_offer.findByDate(LocalDate.now().minus(Period.ofDays(5)), LocalDate.now());
         Assert.assertThat(result.size(), is(1));
-        assertTrue(result.get(0).getDate().isEqual(this.offer.getDate()));
-
+        result = this.db_offer.findByDate(LocalDate.now().minus(Period.ofDays(10)), LocalDate.now());
+        Assert.assertThat(result.size(), is(2));
+        assertTrue(result.get(1).getDate().isEqual(offer2.getDate()));
     }
 
     @Test

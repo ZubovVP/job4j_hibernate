@@ -15,6 +15,10 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script>
         function deleteElements() {
             $("#table tr:gt(0)").remove();
@@ -91,25 +95,6 @@
             );
         }
 
-        function findByDate() {
-            var date = $('#date_offer').val();
-            $.ajax({
-                    type: 'GET',
-                    url: "${pageContext.servletContext.contextPath}/getByDate",
-                    data: {
-                        date: date
-                    },
-                    dataType: 'application/json',
-                    complete: function (data) {
-                        deleteElements();
-                        var carOffers = JSON.parse(data.responseText);
-                        deleteElements();
-                        fiilTable(carOffers);
-                    }
-                }
-            );
-        }
-
         function findByPhotos() {
             $.ajax({
                     type: 'GET',
@@ -127,6 +112,28 @@
                 }
             );
         }
+        $(function() {
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left'
+            }, function(start, end) {
+                $.ajax({
+                        type: 'GET',
+                        url: "${pageContext.servletContext.contextPath}/getByDate",
+                        data: {
+                            start : start.format('YYYY-MM-DD'),
+                             finish : end.format('YYYY-MM-DD')
+                        },
+                        dataType: 'application/json',
+                        complete: function (data) {
+                            deleteElements();
+                            var carOffers = JSON.parse(data.responseText);
+                            deleteElements();
+                            fiilTable(carOffers);
+                        }
+                    }
+                );
+            });
+        });
     </script>
     <style>
         body {
@@ -163,8 +170,7 @@
                            id="type" name="type" onchange="findByType()">
                 </td>
                 <td>
-                    <input type="date" max="<%=Year.now().getValue()%>"
-                           id="date_offer" name="date_offer" onchange="findByDate()">
+                    <input type="text" name="daterange" value="Range date"/>
                 </td>
                 <td>
                     <input type="reset"

@@ -35,8 +35,9 @@ public class GetByDateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.addHeader("Access-Control-Allow-Origin", "*"); // Cros
-        LocalDate date = LocalDate.parse(req.getParameter("date"), DATE_FORMAT);
-        List<Offer> cars = VS.findByDate(date);
+        LocalDate start = LocalDate.parse(req.getParameter("start"), DATE_FORMAT);
+        LocalDate finish = LocalDate.parse(req.getParameter("finish"), DATE_FORMAT);
+        List<Offer> cars = VS.findByDate(start, finish);
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(cars);
         resp.setContentType("application/json");

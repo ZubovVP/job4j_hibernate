@@ -23,10 +23,10 @@ public class LoginFilter implements Filter {
     /**
      * Check id.
      *
-     * @param servletRequest - servletRequest.
+     * @param servletRequest  - servletRequest.
      * @param servletResponse - servletResponse.
-     * @param chain - chain.
-     * @throws IOException - IOException.
+     * @param chain           - chain.
+     * @throws IOException      - IOException.
      * @throws ServletException - ServletException.
      */
     @Override

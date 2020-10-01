@@ -133,17 +133,19 @@ public class DBStorage_car<I> implements Actions<Offer>, OptionalActitions<Offer
     /**
      * Find element use date.
      *
-     * @param date - date .
+     * @param start  - start date.
+     * @param finish - finish date.
      * @return - list of offers.
      */
     @Override
-    public List<Offer> findByDate(LocalDate date) {
+    public List<Offer> findByDate(LocalDate start, LocalDate finish) {
         return this.tx(
                 session -> {
                     final Query query = session.createQuery("SELECT DISTINCT ff FROM Offer ff " +
                             "JOIN FETCH ff.user u " +
-                            "WHERE ff.date >= :date", Offer.class);
-                    query.setParameter("date", date);
+                            "WHERE ff.date >= :start AND ff.date <= :finish", Offer.class);
+                    query.setParameter("start", start);
+                    query.setParameter("finish", finish);
                     return query.list();
                 }
                 , this.factory);

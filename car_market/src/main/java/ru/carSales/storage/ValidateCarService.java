@@ -52,6 +52,9 @@ public class ValidateCarService implements Actions<Offer>, OptionalActitions<Off
     @Override
     public List<Offer> getAllElements() {
         List<Offer> result = STORAGE.getAllElements();
+        for (Offer offer : result) {
+            offer.getUser().setCars(null);
+        }
         return result;
     }
 
@@ -107,14 +110,15 @@ public class ValidateCarService implements Actions<Offer>, OptionalActitions<Off
     /**
      * Find elements after or equals date.
      *
-     * @param date - date .
+     * @param start  - start date.
+     * @param finish - finish date.
      * @return - list of offers.
      */
     @Override
-    public List<Offer> findByDate(LocalDate date) {
+    public List<Offer> findByDate(LocalDate start, LocalDate finish) {
         List<Offer> result;
-        if(date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())){
-            result = STORAGE.findByDate(date);
+        if ((start.isBefore(LocalDate.now()) || start.isEqual(LocalDate.now())) && (finish.isBefore(LocalDate.now()) || finish.isEqual(LocalDate.now())) && (start.compareTo(finish) <= 0)) {
+            result = STORAGE.findByDate(start, finish);
             for (Offer offer : result) {
                 offer.getUser().setCars(null);
             }

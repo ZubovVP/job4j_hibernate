@@ -182,15 +182,28 @@ public class ValidateCarServiceTest {
     @Test
     public void findElementByDateNow() {
         this.offer = this.validate.add(this.offer);
-        Assert.assertThat(this.validate.findByDate(LocalDate.now()).size(), is(1));
-        Assert.assertThat(this.validate.findByDate(LocalDate.now()).get(0), is(this.offer));
+        List<Offer> result = this.validate.findByDate(LocalDate.now().minus(Period.ofDays(5)), LocalDate.now());
+        Assert.assertThat(result.size(), is(1));
+        Assert.assertThat(result.get(0), is(this.offer));
     }
 
     @Test(expected = IncorrectDateException.class)
     public void findElementByDateFutureShouldException() {
         this.offer = this.validate.add(this.offer);
-        Assert.assertThat(this.validate.findByDate(LocalDate.now()).size(), is(1));
-        this.validate.findByDate(LocalDate.now().plus(Period.ofDays(2)));
+        Assert.assertThat(this.validate.findByDate(LocalDate.now().minus(Period.ofDays(5)), LocalDate.now()).size(), is(1));
+        this.validate.findByDate(LocalDate.now().minus(Period.ofDays(5)), LocalDate.now().plus(Period.ofDays(100)));
+    }
+
+    @Test(expected = IncorrectDateException.class)
+    public void findElementByDateStartIsFutureShouldException() {
+        this.offer = this.validate.add(this.offer);
+        this.validate.findByDate(LocalDate.now().plus(Period.ofDays(5)), LocalDate.now());
+    }
+
+    @Test(expected = IncorrectDateException.class)
+    public void findElementByDateFinishIsFutureShouldException() {
+        this.offer = this.validate.add(this.offer);
+        this.validate.findByDate(LocalDate.now(), LocalDate.now().plus(Period.ofDays(5)));
     }
 
 
@@ -198,7 +211,7 @@ public class ValidateCarServiceTest {
     public void findElementByType() {
         this.offer = this.validate.add(this.offer);
         Assert.assertThat(this.db_offer.getAllElements().size(), is(1));
-        Assert.assertThat(this.validate.findByType("aaaaaa").size(), is(0));
+        Assert.assertThat(this.validate.findByType("TestType2").size(), is(0));
         Assert.assertThat(this.validate.findByType(this.offer.getTypeBody()).size(), is(1));
         Assert.assertThat(this.validate.findByType(this.offer.getTypeBody()).get(0), is(this.offer));
     }

@@ -12,11 +12,13 @@ import java.util.List;
  */
 public interface FindByDateAble<E> {
 
+
     /**
      * Find elements after or equals date.
      *
-     * @param date - date .
-     * @return - list of offers.
+     * @param start - start date.
+     * @param finish - end date.
+     * @return - List of elements.
      */
-    List<E> findByDate(LocalDate date);
+    List<E> findByDate(LocalDate start, LocalDate finish);
 }

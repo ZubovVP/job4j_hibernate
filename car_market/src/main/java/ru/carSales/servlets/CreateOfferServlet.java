@@ -38,10 +38,10 @@ public class CreateOfferServlet extends HttpServlet {
     /**
      * Show CreateOffer.jsp.
      *
-     * @param req - req.
+     * @param req  - req.
      * @param resp - resp
      * @throws ServletException - ServletException.
-     * @throws IOException - IOException.
+     * @throws IOException      - IOException.
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -51,7 +51,7 @@ public class CreateOfferServlet extends HttpServlet {
     /**
      * Add offer in DB.
      *
-     * @param req - req.
+     * @param req  - req.
      * @param resp - resp.
      * @throws IOException - IOException.
      */
@@ -97,29 +97,29 @@ public class CreateOfferServlet extends HttpServlet {
     /**
      * Upload file.
      *
-     * @param car - offer.
+     * @param car  - offer.
      * @param item - item.
      * @throws Exception - Exception.
      */
     private void processUploadedFile(Offer car, FileItem item) throws Exception {
-        File uploadetFile = new File("C:\\projects\\job4j_hibernate\\car_market\\src\\main\\webapp\\images");
+        File uploadetFile = new File(getServletContext().getRealPath("\\images"));
         String name;
         if (!uploadetFile.exists() && uploadetFile.isFile()) {
             uploadetFile.mkdir();
         }
         do {
             name = random.nextInt() + item.getName();
-            uploadetFile = new File(String.format("C:\\projects\\job4j_hibernate\\car_market\\src\\main\\webapp\\images\\%s", name));
+            uploadetFile = new File(String.format("%s\\%s", getServletContext().getRealPath("\\images"), name));
         } while (uploadetFile.exists());
         uploadetFile.createNewFile();
         item.write(uploadetFile);
-        car.setDir_photos(name);
+        car.setDir_photos(String.format("\\images\\%s", name));
     }
 
     /**
      * Fill parameters.
      *
-     * @param car - offer.
+     * @param car  - offer.
      * @param item - item.
      */
     private void processFormField(Offer car, FileItem item) {
