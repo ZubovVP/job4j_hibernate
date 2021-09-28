@@ -9,6 +9,6 @@ import java.io.Closeable;
  * Version: $Id$.
  * Date: 25.04.2020.
  */
-public interface Actions<E> extends AddAble<E>, GetAllElementsAble,UpdateAble<E>, FindAble<E>, DeleteAble, Closeable {
+public interface Actions<E> extends AddAble<E>, GetAllElementsAble, UpdateAble<E>, FindAble<E>, DeleteAble, Closeable {
 
 }

@@ -3,5 +3,28 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
-
+    <servlet>
+        <servlet-name>GetItems</servlet-name>
+        <servlet-class>ru.job4j.todoList.servlets.ItemGetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetItems</servlet-name>
+        <url-pattern>/get</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>CreateItem</servlet-name>
+        <servlet-class>ru.job4j.todoList.servlets.ItemCreateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateItem</servlet-name>
+        <url-pattern>/create</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>UpdateItem</servlet-name>
+        <servlet-class>ru.job4j.todoList.servlets.ItemUpdateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateItem</servlet-name>
+        <url-pattern>/update</url-pattern>
+    </servlet-mapping>
 </web-app>

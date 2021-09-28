@@ -161,13 +161,10 @@ public class DBStorage_car<I> implements Actions<Offer>, OptionalActitions<Offer
     public List<Offer> findByType(String type) {
         return this.tx(
                 session -> {
-                    final Query query = session.createQuery("SELECT DISTINCT ff FROM Offer ff " +
-                            "JOIN FETCH ff.user u " +
-                            "WHERE ff.typeBody = :type", Offer.class);
+                    final Query query = session.createQuery("SELECT DISTINCT ff FROM Offer ff JOIN FETCH ff.user u WHERE ff.typeBody = :type", Offer.class);
                     query.setParameter("type", type);
                     return query.list();
-                }
-                , this.factory);
+                }, this.factory);
     }
 
     /**
