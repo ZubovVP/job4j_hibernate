@@ -12,17 +12,16 @@
 #### Инструменты:
 В данном проекте использовались следующие инструменты:    
 1) IntelliJ Idea    
-2) Maven    
-3) jUnit    
-4) Git    
-5) Servlet    
-6) PostgreSQL    
-7) Hibernate    
-8) Web.
+2) Maven        
+3) Git    
+4) Servlet    
+5) PostgreSQL    
+6) Hibernate    
+7) Web.
 
 #### TODO список 
-![Image alt](https://github.com/ZubovVP/job4j_hibernate/tree/master/hibernate/src/main/resources/images/index_page.png)
+![TODO list](https://github.com/ZubovVP/job4j_hibernate/blob/master/hibernate/src/main/resources/images/index_page.png "Список дел")                                     
 
 #### Площадка продажи машин 
-![Image alt](https://github.com/ZubovVP/job4j_hibernate/tree/master/car_market/src/main/resources/images/start_page.png)
-![Image alt](https://github.com/ZubovVP/job4j_hibernate/tree/master/car_market/src/main/resources/images/login.png)
+![Car_market](https://github.com/ZubovVP/job4j_hibernate/blob/master/car_market/src/main/resources/images/start_page.png "Список дел")
+![Car_market](https://github.com/ZubovVP/job4j_hibernate/blob/master/car_market/src/main/resources/images/login.png "Список дел")
