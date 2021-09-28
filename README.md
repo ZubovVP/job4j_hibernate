@@ -19,9 +19,9 @@
 6) Hibernate    
 7) Web.
 
-#### TODO список 
+## TODO список 
 ![TODO list](https://github.com/ZubovVP/job4j_hibernate/blob/master/hibernate/src/main/resources/images/index_page.png "Список дел")                                     
 
-#### Площадка продажи машин 
+## Площадка продажи машин 
 ![Car_market](https://github.com/ZubovVP/job4j_hibernate/blob/master/car_market/src/main/resources/images/start_page.png "Список дел")
 ![Car_market](https://github.com/ZubovVP/job4j_hibernate/blob/master/car_market/src/main/resources/images/login.png "Список дел")
